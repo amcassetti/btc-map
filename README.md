@@ -1,5 +1,5 @@
-A world map that shows new (and unconfirmed) bitcoin transactions in real-time using Node, D3 and the Blockchain.info web socket API. So far it displays transaction location and amount in USD based on a hardcoded BTC-USD exchange rate. The goal is to have it update using the coinbase api in a future release. 
+A world map that shows new (and unconfirmed) bitcoin transactions in real-time using Node, D3 and the Blockchain.info web socket API. This is an updated verison of a previous project, and now includes a fancy new animated map.
 
-Credit to tomnoda for his code for the D3 map. See his blog post here: http://www.tnoda.com/blog/2013-12-07
+Credit to Jason Davies for his "Animated World Zoom" example, which I used as a starting point: https://www.jasondavies.com/maps/zoom/
 
 Enjoy!

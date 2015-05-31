@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.graticule {
+  fill: none;
+  stroke: #777;
+  stroke-width: .5px;
+  stroke-opacity: .5;
+}
+
+.land {
+  fill: #222;
+}
+
+.boundary {
+  fill: none;
+  stroke: #fff;
+  stroke-width: .5px;
+}
+
+</style>
+<body>
+<script type="text/javascript" src="socket.io/socket.io.js"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+
+<script>
+console.log(io);
+var socket = io.connect('http://localhost:3000');
+socket.on('tx', function (data) {
+  console.log([data]);
+  svg.selectAll(".pin")
+    .data([data])
+  .enter().append("circle", ".pin")
+    .attr("r", 5)
+    .attr('fill', 'red')
+    .attr("transform", function(d) {
+      return "translate(" + projection([
+        d.longitude,
+        d.latitude
+      ]) + ")"
+    });
+});
+
+var places = [
+  {
+    name: "Wollongong, Australia",
+    location: {
+      latitude: -34.42507,
+      longitude: 150.89315
+    }
+  },
+  {
+    name: "Newcastle, Australia",
+    location: {
+      latitude: -32.92669,
+      longitude: 151.77892
+    }
+  }
+];
+
+var width = 960,
+    height = 960;
+
+var projection = d3.geo.mercator()
+    .scale(153)
+    .translate([width / 2, height / 2])
+    .precision(.1);
+
+var path = d3.geo.path()
+    .projection(projection);
+
+var graticule = d3.geo.graticule();
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    // .attr("preserveAspectRatio", "xMaxYMin")
+    .attr("height", height);
+
+svg.append("path")
+    .datum(graticule)
+    .attr("class", "graticule")
+    .attr("d", path);
+
+svg.selectAll(".pin")
+    .data(places)
+  .enter().append("circle", ".pin")
+    .attr("r", 5)
+    .attr('fill', 'red')
+    .attr("transform", function(d) {
+      return "translate(" + projection([
+        d.location.longitude,
+        d.location.latitude
+      ]) + ")"
+    });
+
+d3.json("http://bl.ocks.org/mbostock/raw/4090846/world-50m.json", function(error, world) {
+  svg.insert("path", ".graticule")
+      .datum(topojson.feature(world, world.objects.land))
+      .attr("class", "land")
+      .attr("d", path);
+
+  svg.insert("path", ".graticule")
+      .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; }))
+      .attr("class", "boundary")
+      .attr("d", path);
+});
+
+d3.select(self.frameElement).style("height", height + "px");
+
+</script>
